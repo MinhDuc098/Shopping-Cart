@@ -1,0 +1,111 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
+
+package controller;
+
+import dal.DAO;
+import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+import model.category;
+import model.product;
+
+/**
+ *
+ * @author AS
+ */
+@WebServlet(name="Search", urlPatterns={"/search"})
+public class Search extends HttpServlet {
+   
+    /** 
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet Search</title>");  
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet Search at " + request.getContextPath () + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        }
+    } 
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /** 
+     * Handles the HTTP <code>GET</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        String nameProduct = request.getParameter("name");
+        String optionSearch = request.getParameter("optionSearch");
+        DAO d = new DAO();
+        List<product> lp =  new ArrayList<product>(); 
+        if(optionSearch.equalsIgnoreCase("name") ){
+             lp = d.getProductByName(nameProduct);
+            
+        }
+        else{
+            Double price = Double.parseDouble(nameProduct);
+            lp = d.getProductByPrice(price);
+        }
+         List<product> l = d.getTopProduct();
+        List<product> n = d.getNewProduct();
+        List<product> f = d.getFeatureProduct();
+         
+        request.setAttribute("topproduct", l);
+       request.setAttribute("newproduct", n);
+       request.setAttribute("featureproduct", f);
+        request.setAttribute("product", lp);
+        List<category> lc = d.getAllCategory();
+         request.setAttribute("category", lc);
+         request.setAttribute("name", nameProduct);
+        request.getRequestDispatcher("Home.jsp").forward(request, response);
+    } 
+
+    /** 
+     * Handles the HTTP <code>POST</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /** 
+     * Returns a short description of the servlet.
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+}
